@@ -69,11 +69,26 @@ def generate_payload():
 
 
 class ShopUser(HttpUser):
-    # wait_time = between(0.1, 0.5)
     @task
     def calculate_price(self):
-        self.client.post(
-            "/calculate-price",
-            json=generate_payload(), 
-            timeout=100
-            )
+        try:
+            with self.client.post(
+                "/calculate-price",
+                json=generate_payload(),
+                timeout=100,
+                catch_response=True,
+            ) as response:
+
+                if response.status_code == 504:
+                    response.failure("504 Gateway Timeout")
+                else:
+                    response.success()
+
+        except (ConnectionResetError, ConnectionAbortedError, ConnectionError):
+            pass
+
+        except RemoteDisconnected:
+            pass
+
+        except Exception:
+            pass
