@@ -1,0 +1,1582 @@
+{
+  "apiVersion": "dashboard.grafana.app/v2",
+  "kind": "Dashboard",
+  "metadata": {
+    "name": "dfasfasdfda",
+    "namespace": "default",
+    "uid": "8887ddc0-9155-4f72-a70e-2ed803232004",
+    "resourceVersion": "1788462107719016",
+    "generation": 23,
+    "creationTimestamp": "2026-09-03T13:27:16Z",
+    "labels": {
+      "grafana.app/deprecatedInternalID": "1"
+    },
+    "annotations": {
+      "grafana.app/createdBy": "user:afx4rzwbpsrnkc",
+      "grafana.app/saved-from-ui": "Grafana v13.2.1 (56cd3e9288)",
+      "grafana.app/updatedBy": "user:afx4rzwbpsrnkc",
+      "grafana.app/updatedTimestamp": "2026-09-03T19:01:47Z"
+    }
+  },
+  "spec": {
+    "annotations": [
+      {
+        "kind": "AnnotationQuery",
+        "spec": {
+          "query": {
+            "kind": "DataQuery",
+            "group": "grafana",
+            "version": "v0",
+            "datasource": {
+              "name": "-- Grafana --"
+            },
+            "spec": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            }
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "builtIn": true
+        }
+      }
+    ],
+    "cursorSync": "Crosshair",
+    "description": "A simple overview of the most important Docker host and container metrics. (cAdvisor/Prometheus)",
+    "editable": true,
+    "elements": {
+      "panel-1": {
+        "kind": "Panel",
+        "spec": {
+          "id": 1,
+          "title": "CPU Usage per Container",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "(sum(rate(container_cpu_usage_seconds_total{name=~\".+\", instance=~\"$cadvisor\"}[$__rate_interval])) by (name, instance)/8)*100",
+                        "interval": "",
+                        "intervalFactor": 2,
+                        "legendFormat": "{{name}}",
+                        "metric": "",
+                        "range": true,
+                        "step": 240
+                      }
+                    },
+                    "refId": "F",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "interval": "30s"
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "alertThreshold": true,
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 50,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "normal"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "pyspark-worker"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "super-light-blue",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "pyspark-worker"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "super-light-blue",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "locust"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "super-light-blue",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "pyspark",
+                          "locust",
+                          "kafka-broker-01",
+                          "clickhouse",
+                          "api",
+                          "kafka-controller-01"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-10": {
+        "kind": "Panel",
+        "spec": {
+          "id": 10,
+          "title": "Memory Usage per Container",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum(container_memory_rss{name=~\".+\", instance=~\"$cadvisor\"}) by (name, instance)",
+                        "intervalFactor": 2,
+                        "legendFormat": "{{name}}",
+                        "range": true,
+                        "step": 240
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "container_memory_usage_bytes{name=~\".+\", instance=~\"$cadvisor\"}",
+                        "intervalFactor": 2,
+                        "legendFormat": "{{name}}",
+                        "range": true,
+                        "step": 240
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": true
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "alertThreshold": true,
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "bytes",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 30,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "normal"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "locust"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "super-light-blue",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "pyspark",
+                          "locust",
+                          "clickhouse",
+                          "api",
+                          "kafka-broker-01",
+                          "kafka-controller-01"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-25": {
+        "kind": "Panel",
+        "spec": {
+          "id": 25,
+          "title": "Used Memory",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "((node_memory_MemTotal_bytes{instance=~\"$exporter\"} - node_memory_MemAvailable_bytes{instance=~\"$exporter\"}) / node_memory_MemTotal_bytes{instance=~\"$exporter\"}) * 100",
+                        "intervalFactor": 2,
+                        "range": true,
+                        "step": 1800
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 100
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "gauge",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "barShape": "flat",
+                "barWidthFactor": 0.5,
+                "effects": {
+                  "barGlow": false,
+                  "centerGlow": false,
+                  "gradient": false
+                },
+                "endpointMarker": "point",
+                "minVizHeight": 75,
+                "minVizWidth": 75,
+                "orientation": "horizontal",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "segmentCount": 1,
+                "segmentSpacing": 0.3,
+                "shape": "gauge",
+                "showThresholdLabels": false,
+                "showThresholdMarkers": true,
+                "sizing": "auto",
+                "sparkline": false,
+                "textMode": "auto"
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percent",
+                  "decimals": 0,
+                  "min": 0,
+                  "max": 100,
+                  "mappings": [
+                    {
+                      "type": "special",
+                      "options": {
+                        "match": "null",
+                        "result": {
+                          "text": "N/A"
+                        }
+                      }
+                    }
+                  ],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "rgba(50, 172, 45, 0.97)"
+                      },
+                      {
+                        "value": 70,
+                        "color": "rgba(237, 129, 40, 0.89)"
+                      },
+                      {
+                        "value": 90,
+                        "color": "rgba(245, 54, 54, 0.9)"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-27": {
+        "kind": "Panel",
+        "spec": {
+          "id": 27,
+          "title": "Load",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "node_load1{instance=~\"$exporter\"} / count by(job, instance)(count by(job, instance, cpu)(node_cpu_seconds_total{instance=~\"$exporter\"}))",
+                        "intervalFactor": 2,
+                        "range": true,
+                        "step": 1800
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 100
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "colorMode": "none",
+                "graphMode": "area",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "mean"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percentunit",
+                  "decimals": 0,
+                  "mappings": [
+                    {
+                      "type": "special",
+                      "options": {
+                        "match": "null",
+                        "result": {
+                          "text": "N/A"
+                        }
+                      }
+                    }
+                  ],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "rgba(245, 54, 54, 0.9)"
+                      },
+                      {
+                        "value": 0.8,
+                        "color": "rgba(237, 129, 40, 0.89)"
+                      },
+                      {
+                        "value": 0.9,
+                        "color": "rgba(50, 172, 45, 0.97)"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "fixed",
+                    "fixedColor": "rgb(69, 193, 31)"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-28": {
+        "kind": "Panel",
+        "spec": {
+          "id": 28,
+          "title": "Load",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "node_load1{instance=~\"$exporter\"} / count by(job, instance)(count by(job, instance, cpu)(node_cpu_seconds_total{instance=~\"$exporter\"}))",
+                        "intervalFactor": 2,
+                        "range": true,
+                        "step": 600
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "alertThreshold": true,
+                "legend": {
+                  "calcs": [
+                    "mean",
+                    "lastNotNull"
+                  ],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": false
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "percentunit",
+                  "max": 1.5,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "transparent"
+                      },
+                      {
+                        "value": 1.25,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 100,
+                    "gradientMode": "opacity",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": true,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "line+area"
+                    }
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byType",
+                      "options": "time"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.axisPlacement",
+                        "value": "hidden"
+                      }
+                    ]
+                  },
+                  {
+                    "matcher": {
+                      "id": "byType",
+                      "options": "time"
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.axisPlacement",
+                        "value": "hidden"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-31": {
+        "kind": "Panel",
+        "spec": {
+          "id": 31,
+          "title": "Containers",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "count(rate(container_last_seen{name=~\".+\", instance='$cadvisor'}[$interval]))",
+                        "intervalFactor": 2,
+                        "range": true,
+                        "step": 1800
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {
+                "maxDataPoints": 100
+              }
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "stat",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "colorMode": "none",
+                "graphMode": "none",
+                "justifyMode": "auto",
+                "orientation": "horizontal",
+                "percentChangeColorMode": "standard",
+                "reduceOptions": {
+                  "calcs": [
+                    "lastNotNull"
+                  ],
+                  "fields": "",
+                  "values": false
+                },
+                "showPercentChange": false,
+                "textMode": "auto",
+                "wideLayout": true
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "none",
+                  "mappings": [
+                    {
+                      "type": "special",
+                      "options": {
+                        "match": "null",
+                        "result": {
+                          "text": "N/A"
+                        }
+                      }
+                    }
+                  ],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "thresholds"
+                  }
+                },
+                "overrides": []
+              }
+            }
+          }
+        }
+      },
+      "panel-8": {
+        "kind": "Panel",
+        "spec": {
+          "id": 8,
+          "title": "Received Network Traffic per Container",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum(rate(container_network_receive_bytes_total{name=~\".+\", instance=~\"$cadvisor\"}[$interval])) by (name)",
+                        "intervalFactor": 2,
+                        "legendFormat": "{{name}}",
+                        "range": true,
+                        "step": 240
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "- rate(container_network_transmit_bytes_total{name=~\".+\", instance=~\"$cadvisor\"}[$interval])",
+                        "intervalFactor": 2,
+                        "legendFormat": "{{name}}",
+                        "range": true,
+                        "step": 10
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": true
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "alertThreshold": true,
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "Bps",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "locust"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "super-light-blue",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "kafka-controller-01",
+                          "kafka-broker-01",
+                          "clickhouse",
+                          "api",
+                          "pyspark",
+                          "locust"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "panel-9": {
+        "kind": "Panel",
+        "spec": {
+          "id": 9,
+          "title": "Sent Network Traffic per Container",
+          "description": "",
+          "links": [],
+          "data": {
+            "kind": "QueryGroup",
+            "spec": {
+              "queries": [
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "sum(rate(container_network_transmit_bytes_total{name=~\".+\", instance=~\"$cadvisor\"}[$interval])) by (name)",
+                        "intervalFactor": 2,
+                        "legendFormat": "{{name}}",
+                        "range": true,
+                        "step": 240
+                      }
+                    },
+                    "refId": "A",
+                    "hidden": false
+                  }
+                },
+                {
+                  "kind": "PanelQuery",
+                  "spec": {
+                    "query": {
+                      "kind": "DataQuery",
+                      "group": "prometheus",
+                      "version": "v0",
+                      "datasource": {
+                        "name": "afx53k1nm914wd"
+                      },
+                      "spec": {
+                        "editorMode": "code",
+                        "expr": "rate(container_network_transmit_bytes_total{id=\"/\", instance=~\"$cadvisor\"}[$interval])",
+                        "intervalFactor": 2,
+                        "legendFormat": "",
+                        "range": true,
+                        "step": 10
+                      }
+                    },
+                    "refId": "B",
+                    "hidden": true
+                  }
+                }
+              ],
+              "transformations": [],
+              "queryOptions": {}
+            }
+          },
+          "vizConfig": {
+            "kind": "VizConfig",
+            "group": "timeseries",
+            "version": "13.2.1",
+            "spec": {
+              "options": {
+                "alertThreshold": true,
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "table",
+                  "placement": "right",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "hideZeros": false,
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "fieldConfig": {
+                "defaults": {
+                  "unit": "Bps",
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "value": 0,
+                        "color": "green"
+                      },
+                      {
+                        "value": 80,
+                        "color": "red"
+                      }
+                    ]
+                  },
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "barWidthFactor": 0.6,
+                    "drawStyle": "line",
+                    "fillOpacity": 10,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 2,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "never",
+                    "showValues": false,
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  }
+                },
+                "overrides": [
+                  {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "locust"
+                    },
+                    "properties": [
+                      {
+                        "id": "color",
+                        "value": {
+                          "fixedColor": "super-light-blue",
+                          "mode": "fixed"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "__systemRef": "hideSeriesFrom",
+                    "matcher": {
+                      "id": "byNames",
+                      "options": {
+                        "mode": "exclude",
+                        "names": [
+                          "pyspark",
+                          "locust",
+                          "kafka-broker-01",
+                          "clickhouse",
+                          "api",
+                          "kafka-controller-01"
+                        ],
+                        "prefix": "All except:",
+                        "readOnly": true
+                      }
+                    },
+                    "properties": [
+                      {
+                        "id": "custom.hideFrom",
+                        "value": {
+                          "legend": false,
+                          "tooltip": true,
+                          "viz": true
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "layout": {
+      "kind": "GridLayout",
+      "spec": {
+        "items": [
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 0,
+              "width": 11,
+              "height": 9,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-1"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 11,
+              "y": 0,
+              "width": 11,
+              "height": 9,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-10"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 0,
+              "y": 9,
+              "width": 8,
+              "height": 9,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-8"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 8,
+              "y": 9,
+              "width": 8,
+              "height": 9,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-9"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 16,
+              "y": 9,
+              "width": 3,
+              "height": 4,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-27"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 19,
+              "y": 9,
+              "width": 3,
+              "height": 6,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-28"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 16,
+              "y": 13,
+              "width": 3,
+              "height": 5,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-25"
+              }
+            }
+          },
+          {
+            "kind": "GridLayoutItem",
+            "spec": {
+              "x": 19,
+              "y": 15,
+              "width": 3,
+              "height": 3,
+              "element": {
+                "kind": "ElementReference",
+                "name": "panel-31"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "links": [],
+    "liveNow": false,
+    "preload": false,
+    "tags": [],
+    "timeSettings": {
+      "timezone": "browser",
+      "from": "now-6h",
+      "to": "now",
+      "autoRefresh": "10s",
+      "autoRefreshIntervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ],
+      "hideTimepicker": false,
+      "fiscalYearStartMonth": 0
+    },
+    "title": "Docker and system monitoring (nodeexporter v1.3.1)",
+    "variables": [
+      {
+        "kind": "IntervalVariable",
+        "spec": {
+          "name": "interval",
+          "query": "30s,1m,2m,3m,5m,7m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+          "current": {
+            "text": "auto",
+            "value": "$__auto_interval_interval"
+          },
+          "options": [
+            {
+              "selected": true,
+              "text": "auto",
+              "value": "$__auto_interval_interval"
+            },
+            {
+              "selected": false,
+              "text": "30s",
+              "value": "30s"
+            },
+            {
+              "selected": false,
+              "text": "1m",
+              "value": "1m"
+            },
+            {
+              "selected": false,
+              "text": "2m",
+              "value": "2m"
+            },
+            {
+              "selected": false,
+              "text": "3m",
+              "value": "3m"
+            },
+            {
+              "selected": false,
+              "text": "5m",
+              "value": "5m"
+            },
+            {
+              "selected": false,
+              "text": "7m",
+              "value": "7m"
+            },
+            {
+              "selected": false,
+              "text": "10m",
+              "value": "10m"
+            },
+            {
+              "selected": false,
+              "text": "30m",
+              "value": "30m"
+            },
+            {
+              "selected": false,
+              "text": "1h",
+              "value": "1h"
+            },
+            {
+              "selected": false,
+              "text": "6h",
+              "value": "6h"
+            },
+            {
+              "selected": false,
+              "text": "12h",
+              "value": "12h"
+            },
+            {
+              "selected": false,
+              "text": "1d",
+              "value": "1d"
+            },
+            {
+              "selected": false,
+              "text": "7d",
+              "value": "7d"
+            },
+            {
+              "selected": false,
+              "text": "14d",
+              "value": "14d"
+            },
+            {
+              "selected": false,
+              "text": "30d",
+              "value": "30d"
+            }
+          ],
+          "auto": true,
+          "auto_min": "50s",
+          "auto_count": 50,
+          "refresh": "onTimeRangeChanged",
+          "label": "Interval",
+          "hide": "dontHide",
+          "skipUrlSync": false
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "cadvisor",
+          "current": {
+            "text": "cadvisor-esf-04-machine",
+            "value": "cadvisor-esf-04-machine"
+          },
+          "label": "cadvisor",
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "afx53k1nm914wd"
+            },
+            "spec": {
+              "query": "label_values(instance)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            }
+          },
+          "regex": "cadvisor",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "label_values(instance)",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      },
+      {
+        "kind": "QueryVariable",
+        "spec": {
+          "name": "exporter",
+          "current": {
+            "text": "exporter-esf-02-machine",
+            "value": "exporter-esf-02-machine"
+          },
+          "label": "exporter",
+          "hide": "dontHide",
+          "refresh": "onDashboardLoad",
+          "skipUrlSync": false,
+          "query": {
+            "kind": "DataQuery",
+            "group": "prometheus",
+            "version": "v0",
+            "datasource": {
+              "name": "afx53k1nm914wd"
+            },
+            "spec": {
+              "query": "label_values(instance)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            }
+          },
+          "regex": "exporter",
+          "regexApplyTo": "value",
+          "sort": "disabled",
+          "definition": "label_values(instance)",
+          "options": [],
+          "multi": false,
+          "includeAll": false,
+          "allowCustomValue": true
+        }
+      }
+    ]
+  }
+}

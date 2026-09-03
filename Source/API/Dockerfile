@@ -1,8 +1,5 @@
 FROM python:3.12-slim
 
-# RUN mkdir -p ~/.pip
-# RUN printf "[global]\ntimeout=900\nno-cache-dir=true\ntrusted-host=pip.cache.alvand.ir\nindex-url=http://pip.cache.alvand.ir/simple\n" > ~/.pip/pip.conf
-
 WORKDIR /app
 
 COPY requirements.txt .

@@ -87,8 +87,8 @@ class ShopUser(HttpUser):
         except (ConnectionResetError, ConnectionAbortedError, ConnectionError):
             pass
 
-        except RemoteDisconnected:
-            pass
+        # except RemoteDisconnected:
+        #     pass
 
         except Exception:
             pass
