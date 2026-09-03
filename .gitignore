@@ -1,0 +1,9 @@
+Source/API/logs
+Source/Clickhouse/logs
+Source/Clickhouse/initdb.d/901_config.sql
+Source/Kafka/logs
+Source/Locust/__pycache__
+Source/Monitoring/logs
+Source/Monitoring/docker-compose-productions.yml
+Source/Spark/logs
+TMP/

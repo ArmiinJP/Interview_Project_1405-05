@@ -1,0 +1,201 @@
+x-pyspark: &pyspark
+  image: spark:4.0.1-python3
+  user: root
+  command: bash -c "mkdir -p /opt/spark/work-dir/codes && mkdir -p /opt/spark/work-dir/packages && mkdir -p /var/log/docker && mkdir -p /var/log/checkpoints && mkdir -p /var/log/data"
+  cpus: 4.0
+  mem_limit: 2g 
+  volumes:
+    - ./Spark/packages:/opt/spark/work-dir/packages
+    - ./Spark/codes:/opt/spark/work-dir/codes
+    - ./Spark/conf:/opt/spark/conf
+    - ./Spark/logs/logs:/var/log/docker
+    - ./Spark/logs/data:/var/log/data
+    - ./Spark/logs/checkpoints:/var/log/checkpoints
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+  networks:
+    - project_network
+  environment:
+    TZ: 'Asia/Tehran'
+  env_file:
+    - .env
+
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.10.1
+    container_name: clickhouse
+    hostname: clickhouse
+    restart: always
+    # user: root
+    cpus: 1.0
+    mem_limit: 2g
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+      - "9009:9009"
+    environment:
+      TZ: 'Asia/Tehran'
+    env_file:
+      - .env            
+    volumes:
+      # - clickhouse_data:/var/lib/clickhouse
+      # - clickhouse_logs:/var/log/clickhouse-server      
+      - ./Clickhouse/config.xml:/etc/clickhouse-server/config.xml
+      - ./Clickhouse/config.d:/etc/clickhouse-server/config.d
+      - ./Clickhouse/users.d:/etc/clickhouse-server/users.d
+      - ./Clickhouse/initdb.d:/docker-entrypoint-initdb.d
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./Clickhouse/logs/data:/var/lib/clickhouse
+      - ./Clickhouse/logs/logs:/var/log/clickhouse-server      
+    networks:
+      - project_network      
+    cap_add:
+      - SYS_NICE      
+
+  api:
+    build:
+      context: ./API/
+    container_name: api
+    hostname: api
+    depends_on:
+      kafka-broker:
+        condition: service_healthy
+    cpus: 1.0
+    mem_limit: 1g
+    environment:
+      TZ: 'Asia/Tehran'      
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    networks:
+      - project_network
+    restart: unless-stopped
+
+  kafka-controller:
+    user: root
+    image: apache/kafka:4.0.0
+    container_name: ${KAFKA_CONTROLLER_HOSTNAME}
+    hostname: ${KAFKA_CONTROLLER_HOSTNAME}
+    cpus: 1.0
+    mem_limit: 1g    
+    extra_hosts:
+      - "kafka-controller-01:${IP_KAFKA_CONTROLLER_01}"
+      - "kafka-broker-01:${IP_KAFKA_BROKER_01}"
+    ports:
+      - 9093:9093
+    environment:
+      KAFKA_NODE_ID: ${CONTROLLER_NODE_ID}
+      KAFKA_PROCESS_ROLES: controller
+      KAFKA_LISTENERS: CONTROLLER://:9093
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 11@kafka-controller-01:9093
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG4J_ROOT_LOGLEVEL: "WARN"
+      KAFKA_LOG4J_LOGGERS: "kafka=WARN,kafka.controller=WARN,kafka.log.LogCleaner=WARN,state.change.logger=WARN"
+    networks:
+      project_network:
+        ipv4_address: 172.25.0.10
+    volumes:
+      - ./Kafka/logs/kafka-controller:/var/lib/kafka/data
+
+  kafka-broker:
+    user: root
+    image: apache/kafka:4.0.0
+    container_name: ${KAFKA_BROKER_HOSTNAME}
+    hostname: ${KAFKA_BROKER_HOSTNAME}
+    cpus: 1.0
+    mem_limit: 2g      
+    depends_on:
+      - kafka-controller
+    extra_hosts:
+      - "kafka-controller-01:${IP_KAFKA_CONTROLLER_01}"
+      - "kafka-broker-01:${IP_KAFKA_BROKER_01}"
+    ports:
+      - 9092:9092
+      - 9094:9094
+    environment:
+      KAFKA_NODE_ID: ${BROKER_NODE_ID}
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_DELETE_TOPIC_ENABLE: true
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: false
+      KAFKA_LOG_SEGMENT_BYTES: 2147483646 #2GB
+      # KAFKA_LOG_SEGMENT_MS: 21600000 #2.5 hours -- this config not work!!
+      KAFKA_LOG_CLEANUP_POLICY: delete
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000 #5min
+      KAFKA_LOG_RETENTION_BYTES: -1 #unlimit
+      KAFKA_LOG_RETENTION_MS: 25200000  #3 hours
+      KAFKA_LOG_CLEANER_DELETE_RETENTION_MS: 86400000  #1 day, for topics that **compact policy**
+      KAFKA_PROCESS_ROLES: broker
+      KAFKA_LISTENERS: PLAINTEXT://:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${KAFKA_IP}:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 11@kafka-controller-01:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG4J_ROOT_LOGLEVEL: "WARN"
+      KAFKA_LOG4J_LOGGERS: "kafka=WARN,kafka.controller=WARN,kafka.log.LogCleaner=WARN,state.change.logger=WARN"
+    networks:
+      project_network:
+        ipv4_address: 172.25.0.11  
+    volumes:
+      - ./Kafka/logs/kafka-broker:/var/lib/kafka/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s      
+
+  pyspark:
+    <<: *pyspark
+    container_name: pyspark
+    hostname: pyspark
+    restart: always
+    ports:
+      - "4040:4040"
+    # command: 'sleep 10000000'
+    command: >-
+      bash -c '
+          /opt/spark/bin/spark-submit --master local[4] \
+          --conf spark.driver.memory=${DRIVER_MEMORY} \
+          --conf spark.driver.memoryOverhead=${DRIVER_MEMORY_OVERHEAD} \
+          --conf spark.default.parallelism=${SHUFFLE_INSTANCES} \
+          --conf spark.sql.shuffle.partitions=${SHUFFLE_INSTANCES} \
+          --driver-class-path /opt/spark/work-dir/packages/spark_4/clickhouse-jdbc-0.9.4-all-dependencies.jar:/opt/spark/work-dir/packages/spark_4/com.google.code.findbugs_jsr305-3.0.0.jar:/opt/spark/work-dir/packages/spark_4/org.apache.commons_commons-pool2-2.12.0.jar:/opt/spark/work-dir/packages/spark_4/org.apache.hadoop_hadoop-client-api-3.4.1.jar:/opt/spark/work-dir/packages/spark_4/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar:/opt/spark/work-dir/packages/spark_4/org.apache.kafka_kafka-clients-3.9.1.jar:/opt/spark/work-dir/packages/spark_4/org.apache.spark_spark-protobuf_2.13-4.0.1.jar:/opt/spark/work-dir/packages/spark_4/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.1.jar:/opt/spark/work-dir/packages/spark_4/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.1.jar:/opt/spark/work-dir/packages/spark_4/org.lz4_lz4-java-1.8.0.jar:/opt/spark/work-dir/packages/spark_4/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar:/opt/spark/work-dir/packages/spark_4/org.slf4j_slf4j-api-2.0.16.jar:/opt/spark/work-dir/packages/spark_4/org.spark-project.spark_unused-1.0.0.jar:/opt/spark/work-dir/packages/spark_4/org.xerial.snappy_snappy-java-1.1.10.7.jar \
+          --jars /opt/spark/work-dir/packages/spark_4/clickhouse-jdbc-0.9.4-all-dependencies.jar,/opt/spark/work-dir/packages/spark_4/com.google.code.findbugs_jsr305-3.0.0.jar,/opt/spark/work-dir/packages/spark_4/org.apache.commons_commons-pool2-2.12.0.jar,/opt/spark/work-dir/packages/spark_4/org.apache.hadoop_hadoop-client-api-3.4.1.jar,/opt/spark/work-dir/packages/spark_4/org.apache.hadoop_hadoop-client-runtime-3.4.1.jar,/opt/spark/work-dir/packages/spark_4/org.apache.kafka_kafka-clients-3.9.1.jar,/opt/spark/work-dir/packages/spark_4/org.apache.spark_spark-protobuf_2.13-4.0.1.jar,/opt/spark/work-dir/packages/spark_4/org.apache.spark_spark-sql-kafka-0-10_2.13-4.0.1.jar,/opt/spark/work-dir/packages/spark_4/org.apache.spark_spark-token-provider-kafka-0-10_2.13-4.0.1.jar,/opt/spark/work-dir/packages/spark_4/org.lz4_lz4-java-1.8.0.jar,/opt/spark/work-dir/packages/spark_4/org.scala-lang.modules_scala-parallel-collections_2.13-1.2.0.jar,/opt/spark/work-dir/packages/spark_4/org.slf4j_slf4j-api-2.0.16.jar,/opt/spark/work-dir/packages/spark_4/org.spark-project.spark_unused-1.0.0.jar,/opt/spark/work-dir/packages/spark_4/org.xerial.snappy_snappy-java-1.1.10.7.jar \
+          /opt/spark/work-dir/codes/calculator.py >> /var/log/docker/pyspark_calculator_log.txt 2>&1'
+
+  locust:
+    image: locustio/locust:latest
+    container_name: locust
+    hostname: locust
+    networks:
+      - project_network
+    volumes:
+      - ./Locust:/mnt/locust
+    ports:
+      - "8089:8089"
+    command: >
+      -f /mnt/locust/locustfile.py
+      --host=http://api:8000
+
+networks:
+  project_network:
+    external: true
+
+volumes:
+  clickhouse_data:
+  clickhouse_logs:

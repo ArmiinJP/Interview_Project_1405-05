@@ -1,0 +1,2 @@
+CREATE USER IF NOT EXISTS  admin IDENTIFIED WITH sha256_password BY {{ PASSWORD }} settings profile default;
+GRANT ALL ON *.* TO admin WITH GRANT OPTION;
